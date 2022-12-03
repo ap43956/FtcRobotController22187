@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 
+import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDControlLoopCoefficientsCommand;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -78,6 +79,25 @@ public class IMUdrive extends LinearOpMode{
         tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
     }
 
+    public void MotorMode(String mode){
+        if (mode=="reset") {
+            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        } else if (mode == "run"){
+            frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else if (mode == "pos"){
+            backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+    }
+
     public void setPower(boolean half, double speed, double speed2){
         if (half) {
             frontRight.setPower(speed);
@@ -93,10 +113,7 @@ public class IMUdrive extends LinearOpMode{
     }
 
     public void strafe(double rotations, double speed,boolean left){
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorMode("reset");
         double data = 538*rotations;
         int value = (int)data;
         telemetry.addData("GoalTicks", value);
@@ -111,36 +128,27 @@ public class IMUdrive extends LinearOpMode{
             frontLeft.setTargetPosition(value);
             backRight.setTargetPosition(value);
         }
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorMode("pos");
         if(left){
-            frontRight.setPower(value);
-            backLeft.setPower(value);
-            frontLeft.setPower(-value);
-            backRight.setPower(-value);
+            frontRight.setPower(speed);
+            backLeft.setPower(speed);
+            frontLeft.setPower(-speed);
+            backRight.setPower(-speed);
         } else {
-            frontRight.setPower(-value);
-            backLeft.setPower(-value);
-            frontLeft.setPower(value);
-            backRight.setPower(value);
+            frontRight.setPower(-speed);
+            backLeft.setPower(-speed);
+            frontLeft.setPower(speed);
+            backRight.setPower(speed);
         }
         while(backLeft.isBusy() && frontLeft.isBusy()&&frontRight.isBusy()&&backRight.isBusy()){
 
         }
         setPower(false, 0,0);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorMode("run");
     }
 
     public void move(double rotations, double speed, boolean back){
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorMode("reset");
         double data = 538*rotations;
                 int value = (int)data;
                 telemetry.addData("GoalTicks", value);
@@ -148,10 +156,7 @@ public class IMUdrive extends LinearOpMode{
         frontLeft.setTargetPosition(value);
         frontRight.setTargetPosition(value);
         backRight.setTargetPosition(value);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorMode("pos");
         if (back) {
             setPower(false, -speed, 0);
         } else {
@@ -161,25 +166,16 @@ public class IMUdrive extends LinearOpMode{
 
         }
         setPower(false, 0,0);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorMode("run");
     }
 
     public void left(int angle){
         imu.resetYaw();
-        frontLeft.setPower(-0.5);
-        backLeft.setPower(-0.5);
-        frontRight.setPower(0.5);
-        backRight.setPower(0.5);
+        setPower(true, 0.5,-0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)>=angle){
-                frontLeft.setPower(0);
-                backLeft.setPower(0);
-                frontRight.setPower(0);
-                backRight.setPower(0);
+            setPower(false, 0,0);
                 loopDone=true;
             }
 
@@ -187,17 +183,11 @@ public class IMUdrive extends LinearOpMode{
             telemetry.update();
         }
         loopDone=false;
-        frontLeft.setPower(0.1);
-        backLeft.setPower(0.1);
-        frontRight.setPower(-0.1);
-        backRight.setPower(-0.1);
+        setPower(true, -0.1, 0.1);
         while (!loopDone){
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)<=angle){
-                frontLeft.setPower(0);
-                backLeft.setPower(0);
-                frontRight.setPower(0);
-                backRight.setPower(0);
+                setPower(false, 0,0);
                 loopDone=true;
             }
 
@@ -209,17 +199,11 @@ public class IMUdrive extends LinearOpMode{
 
     public void right(int angle){
         imu.resetYaw();
-        frontLeft.setPower(0.5);
-        backLeft.setPower(0.5);
-        frontRight.setPower(-0.5);
-        backRight.setPower(-0.5);
+        setPower(true, -0.5, 0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)<=-angle){
-                frontLeft.setPower(0);
-                backLeft.setPower(0);
-                frontRight.setPower(0);
-                backRight.setPower(0);
+                setPower(false, 0,0);
                 loopDone=true;
             }
 
@@ -227,17 +211,11 @@ public class IMUdrive extends LinearOpMode{
             telemetry.update();
         }
         loopDone=false;
-        frontLeft.setPower(-0.1);
-        backLeft.setPower(-0.1);
-        frontRight.setPower(0.1);
-        backRight.setPower(0.1);
+        setPower(true, 0.1, -0.1);
         while (!loopDone){
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)>=-angle){
-                frontLeft.setPower(0);
-                backLeft.setPower(0);
-                frontRight.setPower(0);
-                backRight.setPower(0);
+                setPower(false, 0,0);
                 loopDone=true;
             }
 
@@ -246,6 +224,7 @@ public class IMUdrive extends LinearOpMode{
         }
         loopDone=false;
     }
+
     public void linearMove(double rotations, double speed, boolean down) {
         linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         double data = 538*rotations;
@@ -258,14 +237,11 @@ public class IMUdrive extends LinearOpMode{
         } else {
             linear.setPower(speed);
         }
-        while(backLeft.isBusy() && frontLeft.isBusy()&&frontRight.isBusy()&&backRight.isBusy()){
+        while(linear.isBusy()){
 
         }
         linear.setPower(0);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -332,38 +308,38 @@ public class IMUdrive extends LinearOpMode{
         int i = 0;
         int l = 0;
         if (opModeIsActive()) {
-            while (opModeIsActive()&&!Scanned) {
-
-                telemetry.update();
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
-                    //if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        l++;
-
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                        double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                        double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                        double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
-                        telemetry.addData("", "");
-                        telemetry.addData(""," ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                        telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-                    }
-                    telemetry.update();
-                    // }
-                }
-                else {
-                    telemetry.addData("tfod is null again", "");
-                    Scanned=true;
-                }
+//            while (opModeIsActive()&&!Scanned) {
+//
+//                telemetry.update();
+//                if (tfod != null) {
+//                    // getUpdatedRecognitions() will return null if no new information is available since
+//                    // the last time that call was made.
+//                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
+//                    //if (updatedRecognitions != null) {
+//                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
+//
+//                    // step through the list of recognitions and display image position/size information for each one
+//                    // Note: "Image number" refers to the randomized image orientation/number
+//                    for (Recognition recognition : updatedRecognitions) {
+//                        l++;
+//
+//                        double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
+//                        double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+//                        double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
+//                        double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
+//                        telemetry.addData("", "");
+//                        telemetry.addData(""," ");
+//                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
+//                        telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
+//                        telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+//                    }
+//                    telemetry.update();
+//                    // }
+//                }
+//                else {
+//                    telemetry.addData("tfod is null again", "");
+//                    Scanned=true;
+//                }
                 right(90);
             }
         }
