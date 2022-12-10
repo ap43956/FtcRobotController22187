@@ -51,7 +51,7 @@ public class IMUdrive extends LinearOpMode{
     private TFObjectDetector tfod;
 
     private void initVuforia() {
-        /*
+        /*111
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -98,18 +98,11 @@ public class IMUdrive extends LinearOpMode{
         }
     }
 
-    public void setPower(boolean half, double speed, double speed2){
-        if (half) {
-            frontRight.setPower(speed);
-            backRight.setPower(speed);
-            frontLeft.setPower(speed2);
-            backLeft.setPower(speed2);
-        }else {
-            frontLeft.setPower(speed);
-            frontRight.setPower(speed);
-            backLeft.setPower(speed);
-            backRight.setPower(speed);
-        }
+    public void setPower(double speedl,double speedr){
+        frontLeft.setPower(speedl);
+        backLeft.setPower(speedl);
+        frontRight.setPower(speedr);
+        backRight.setPower(speedr);
     }
 
     public void strafe(double rotations, double speed,boolean left){
@@ -143,7 +136,7 @@ public class IMUdrive extends LinearOpMode{
         while(backLeft.isBusy() && frontLeft.isBusy()&&frontRight.isBusy()&&backRight.isBusy()){
 
         }
-        setPower(false, 0,0);
+        setPower(0,0);
         MotorMode("run");
     }
 
@@ -158,24 +151,24 @@ public class IMUdrive extends LinearOpMode{
         backRight.setTargetPosition(value);
         MotorMode("pos");
         if (back) {
-            setPower(false, -speed, 0);
+            setPower(-speed,-speed);
         } else {
-            setPower(false, speed, 0);
+            setPower(speed,speed);
         }
         while(backLeft.isBusy() && frontLeft.isBusy()&&frontRight.isBusy()&&backRight.isBusy()){
 
         }
-        setPower(false, 0,0);
+        setPower(0,0);
         MotorMode("run");
     }
 
     public void left(int angle){
         imu.resetYaw();
-        setPower(true, 0.5,-0.5);
+        setPower(-0.5,0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)>=angle){
-            setPower(false, 0,0);
+            setPower(0,0);
                 loopDone=true;
             }
 
@@ -183,11 +176,11 @@ public class IMUdrive extends LinearOpMode{
             telemetry.update();
         }
         loopDone=false;
-        setPower(true, -0.1, 0.1);
+        setPower(0.1,-0.1);
         while (!loopDone){
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)<=angle){
-                setPower(false, 0,0);
+                setPower(0,0);
                 loopDone=true;
             }
 
@@ -199,11 +192,11 @@ public class IMUdrive extends LinearOpMode{
 
     public void right(int angle){
         imu.resetYaw();
-        setPower(true, -0.5, 0.5);
+        setPower(0.5,-0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)<=-angle){
-                setPower(false, 0,0);
+                setPower(0,0);
                 loopDone=true;
             }
 
@@ -211,11 +204,11 @@ public class IMUdrive extends LinearOpMode{
             telemetry.update();
         }
         loopDone=false;
-        setPower(true, 0.1, -0.1);
+        setPower(-0.1,0.1);
         while (!loopDone){
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES)>=-angle){
-                setPower(false, 0,0);
+                setPower(0,0);
                 loopDone=true;
             }
 
@@ -260,16 +253,10 @@ public class IMUdrive extends LinearOpMode{
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorMode("reset");
+        MotorMode("run");
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         telemetry.addData("InOpMode", "");
@@ -291,10 +278,9 @@ public class IMUdrive extends LinearOpMode{
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(1.0, 16.0/9.0);
+            tfod.setZoom(1.0, 16.0 / 9.0);
             telemetry.addData("setzoom", "");
-        }
-        else {
+        } else {
             telemetry.addData("tfod is null", "");
         }
 
@@ -302,47 +288,69 @@ public class IMUdrive extends LinearOpMode{
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
 
-        boolean Scanned=false;
+        boolean Scanned = false;
         waitForStart();
         telemetry.addData("started", "");
         int i = 0;
         int l = 0;
+        int b = 0;
+        String scan = null;
         if (opModeIsActive()) {
-//            while (opModeIsActive()&&!Scanned) {
-//
-//                telemetry.update();
-//                if (tfod != null) {
-//                    // getUpdatedRecognitions() will return null if no new information is available since
-//                    // the last time that call was made.
-//                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
-//                    //if (updatedRecognitions != null) {
-//                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-//
-//                    // step through the list of recognitions and display image position/size information for each one
-//                    // Note: "Image number" refers to the randomized image orientation/number
-//                    for (Recognition recognition : updatedRecognitions) {
-//                        l++;
-//
-//                        double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-//                        double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-//                        double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-//                        double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
-//                        telemetry.addData("", "");
-//                        telemetry.addData(""," ");
-//                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-//                        telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-//                        telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-//                    }
-//                    telemetry.update();
-//                    // }
-//                }
-//                else {
-//                    telemetry.addData("tfod is null again", "");
-//                    Scanned=true;
-//                }
-                right(90);
+            scan = null;
+            while (opModeIsActive() && !Scanned) {
+                b++;
+
+                telemetry.update();
+                scan = null;
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
+                    //if (updatedRecognitions != null) {
+                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
+
+                    // step through the list of recognitions and display image position/size information for each one
+                    // Note: "Image number" refers to the randomized image orientation/number
+                    for (Recognition recognition : updatedRecognitions) {
+                        l++;
+
+                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
+                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
+                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
+                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
+                        telemetry.addData("", "");
+                        telemetry.addData("", " ");
+                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                        scan = recognition.getLabel();
+                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
+                        Scanned = true;
+                    }
+                    telemetry.update();
+                    // }
+                } else {
+                    telemetry.addData("tfod is null again", "");
+                }
+                if (b > 100000) {
+                    Scanned = true;
+                }
             }
+
+
         }
+        if (scan == "1") {
+            move(2.2, 0.25, false);
+            strafe(2.2, 0.25, true);
+        } else if (scan == "2") {
+            move(2.2, 0.25, false);
+        } else if (scan == "3") {
+            move(2.2, 0.25, false);
+            strafe(2.2, 0.25, true);
+        } else {
+            move(2.2, 0.25, false);
+        }
+
+    }
 
 
 
