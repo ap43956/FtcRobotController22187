@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 public class Camera {
-    private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/ConeDetect.tflite";
+    private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/PogCone.tflite";
 
 
     private static final String[] LABELS = {
