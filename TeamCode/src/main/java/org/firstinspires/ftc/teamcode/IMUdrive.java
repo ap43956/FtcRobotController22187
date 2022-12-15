@@ -378,18 +378,29 @@ public class IMUdrive extends LinearOpMode {
 //            move(2.2, 0.25, false);
 //        }
             }  else {
-                move(2.25, 0.25, false, true);
+                claw.setPosition(1);
+                move(2.25, 0.5, false, true);
                 left(90);
-                move(0.9, 0.25, false,true);
-                linearMove(-525, 0.25, false);
+                move(0.81, 0.25, false,true);
+                linearMove(-600, 0.25, false);
+                move(0.05, 0.25, false, true);
                 claw.setPosition(0);
-                sleep(100);
+                sleep(1500);
+                linearMove(-500,0.5,false);
+                //move(0.2, 0.25, true, true);
+                sleep(1000);
                 left(90);
                 claw.setPosition(1);
-                sleep(100);
+                sleep(1000);
                 right(90);
-                linearMove(155,0.25,false);
+                move(0.1,0.25,false,false);
+                linearMove(655,0.25,false);
+
                 claw.setPosition(0);
+                sleep(1500);
+                linearMove(-500, 0.5, false);
+                right(90);
+                claw.setPosition(1);
 
             }
         }
