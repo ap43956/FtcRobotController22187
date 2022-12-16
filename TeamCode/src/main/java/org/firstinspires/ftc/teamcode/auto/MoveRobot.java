@@ -18,7 +18,7 @@ public class MoveRobot {
             myHardware.getFrontRight().setTargetPosition(-value);
             myHardware.getBackLeft().setTargetPosition(-value);
             myHardware.getFrontLeft().setTargetPosition(value);
-            myHardware.getBackRight();
+            myHardware.getBackRight().setTargetPosition(value);
         }
         simplifyCode.MotorMode(myHardware,"pos");
         if(left){

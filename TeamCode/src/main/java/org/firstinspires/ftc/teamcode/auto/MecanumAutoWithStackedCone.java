@@ -39,9 +39,9 @@ public class MecanumAutoWithStackedCone extends LinearOpMode {
         sleep(1000);
         //move forward to tall junction
         moveRobot.move(myHardware, 4.2, 0.6, false);
-        linearMove(3750, 1, false);
+        linearMove(3650, 1, false);
         //strafe left at junction
-        moveRobot.strafe(myHardware, 1.1, 0.5, false);
+        moveRobot.strafe(myHardware, 0.85, 0.5, false);
         sleep(1000);
         //drop cone on junction
         myHardware.getClaw().setPosition(1);
@@ -53,17 +53,17 @@ public class MecanumAutoWithStackedCone extends LinearOpMode {
 
 
 //    strafe to align to pick up stack
-        moveRobot.strafe(myHardware, 0.4, 0.4, false);
+        moveRobot.strafe(myHardware, 0.1, 0.4, false);
         linearMove(720, 0.6, false);
-        moveRobot.move(myHardware, 1.5, 0.6, false);
+        moveRobot.move(myHardware, 1.625, 0.6, false);
         sleep(2000);
         myHardware.getClaw().setPosition(0);
         sleep(2000);
         linearMove(700, 0.6, false);
 
         //go back with the grabbed cone
-        moveRobot.move(myHardware, 1.5, 0.6,  true);
-        moveRobot.strafe(myHardware, 0.4, 0.4, true);
+        moveRobot.move(myHardware, 1.6, 0.6,  true);
+        moveRobot.strafe(myHardware, 0.1, 0.4, true);
         rotateRobot.right(myHardware,90, telemetry);
         linearMove(2330, 1, false);
         //strafe left at junction
