@@ -38,21 +38,16 @@ public class MecanumAutoTests extends LinearOpMode {
     public void runOpMode() {
         myHardware.initialize(hardwareMap, telemetry);
         waitForStart();
-        int i= 0;
-        while(opModeIsActive()) {
-            i++;
-            YawPitchRollAngles orientation = myHardware.getImu().getRobotYawPitchRollAngles();
-            telemetry.addData("angle", orientation.getYaw(AngleUnit.DEGREES));
-            telemetry.addData("I", i);
-            telemetry.update();
-//            if (i>5000){
-                myHardware.getImu().resetYaw();
-//                i = 0;
-//            }
+        rotateRobot.left(myHardware, 90, telemetry);
+        sleep(1000);
+        moveRobot.move(myHardware, 0.2, 0.6, false);
+        sleep(1000);
+        rotateRobot.right(myHardware, 90, telemetry);
+        sleep(1000);
 
         }
 
 
 
     }
-}
+

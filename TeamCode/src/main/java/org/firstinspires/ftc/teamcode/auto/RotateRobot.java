@@ -42,11 +42,15 @@ public class RotateRobot {
 
     public void right(MyHardware myHardware,double angle,Telemetry vTelemetry){
         myHardware.getImu().resetYaw();
+        loopDone = false;
         simplifyCode.setPower(myHardware,0.5,-0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = myHardware.getImu().getRobotYawPitchRollAngles();
-                simplifyCode.setPower(myHardware,0,0);
-                loopDone=true;
+            vTelemetry.addData("angle", orientation.getYaw(AngleUnit.DEGREES));
+            if (orientation.getYaw(AngleUnit.DEGREES) <= -angle) {
+                simplifyCode.setPower(myHardware, 0, 0);
+                loopDone = true;
+            }
 
 
         }
