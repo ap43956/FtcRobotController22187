@@ -344,26 +344,20 @@ public class IMUdrive extends LinearOpMode {
                 }
 
 
-                //Adjust Start
-               // strafe(0.15, 0.5, true, false);
-                //move into position
+                strafe(0.45, 0.5, true, false);
                 claw.setPosition(0);
-                move(2, 0.25, false, false);
-                strafe(3.2, 0.25, false, false);
-                // set up linear
-                linearMove(-3954, 0.25, false);
-                linearMove(100, 0.25, false);
-                //adjust for error
-                move(0.1, 0.25, false, false);
-                strafe(0.2, 0.25, false, false);
+                move(2,0.25,false,false);
+                strafe(3.4,0.25, false,false);
+                linearMove(-3954,0.25,false);
+
+                move(0.2,0.25,false,false);
+                strafe(0.2,0.25,false,false);
                 sleep(2000);
-                //drop cone
-                linearMove(900, 0.25, false);
+                linearMove(900,0.25,false);
                 claw.setPosition(1);
-//go back to start
-                strafe(3.4, 0.25, true, false);
-                linearMove(1200, 0.25, true);
-                //park
+                sleep(250);
+                strafe(3.6, 0.25, true, false);
+                linearMove(1000,0.25,true);
                 if (scan == "1") {
                     // move(2.2, 0.25, false);
                     strafe(2.2, 0.25, true, false);
@@ -373,10 +367,7 @@ public class IMUdrive extends LinearOpMode {
                     // move(2.2, 0.25, false);
                     strafe(2.2, 0.25, false, false);
                 }
-                linearMove(1754, 0.25, true);
-//        else {
-//            move(2.2, 0.25, false);
-//        }
+                linearMove(1754,0.25,true);
             }  else {
                 claw.setPosition(1);
                 move(2.25, 0.5, false, true);
