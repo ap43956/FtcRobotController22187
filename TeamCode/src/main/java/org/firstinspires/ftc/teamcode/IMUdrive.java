@@ -292,7 +292,7 @@ public class IMUdrive extends LinearOpMode {
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
-        boolean read = false; //change autos VERY IMPORTANT
+        boolean read = true; //change autos VERY IMPORTANT
 
         boolean Scanned = false;
         waitForStart();
@@ -345,7 +345,7 @@ public class IMUdrive extends LinearOpMode {
 
 
                 //Adjust Start
-                strafe(0.1, 0.5, true, false);
+               // strafe(0.15, 0.5, true, false);
                 //move into position
                 claw.setPosition(0);
                 move(2, 0.25, false, false);

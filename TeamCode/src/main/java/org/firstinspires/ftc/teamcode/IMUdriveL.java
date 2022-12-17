@@ -333,13 +333,14 @@ public class IMUdriveL extends LinearOpMode{
 
         }
         //move into position
+        strafe(0.45, 0.5, true);
         claw.setPosition(0);
-        move(2,0.25,false);
+        move(2.05,0.25,false);
         strafe(3.4,0.25, true);
        linearMove(-3954,0.25,false);
 
-       move(0.1,0.25,false);
-       strafe(0.2,0.25,true);
+       move(0.3,0.25,false);
+//       strafe(0.2,0.25,true);
         sleep(2000);
        linearMove(900,0.25,false);
        claw.setPosition(1);
