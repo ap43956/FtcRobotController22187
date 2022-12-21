@@ -3,9 +3,6 @@ package org.firstinspires.ftc.teamcode.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Autonomous(name = "MecanumAuto", group = "Auto")
 public class MecanumAuto extends LinearOpMode {
@@ -39,7 +36,7 @@ public class MecanumAuto extends LinearOpMode {
         myHardware.getClaw().setPosition(0);
         sleep(2000);
         linearMove(4000, 0.5, false);
-        moveRobot.strafe(myHardware,1.1,0.5, true);
+        moveRobot.strafe(myHardware,1.1,0.5, true, false);
         myHardware.getClaw().setPosition(1);
 
 

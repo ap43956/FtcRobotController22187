@@ -67,9 +67,9 @@ public class MecanumTele extends LinearOpMode {
             telemetry.addData("linear", linear.getCurrentPosition());
             telemetry.update();
             if (gamepad2.right_trigger>0){
-                linear.setPower(gamepad2.right_trigger/1.2);
+                linear.setPower(gamepad2.right_trigger*3/* /1.2*/);
             } else if (gamepad2.left_trigger>0){
-                linear.setPower(-gamepad2.left_trigger/1.2);
+                linear.setPower(-gamepad2.left_trigger*3/*/1.2*/);
             } else {
                 linear.setPower(0);
             }

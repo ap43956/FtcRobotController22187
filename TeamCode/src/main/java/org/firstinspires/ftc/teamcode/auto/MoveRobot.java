@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 public class MoveRobot {
 
     SimplifyCode simplifyCode = new SimplifyCode();
-    public void strafe(MyHardware myHardware,double rotations, double speed,boolean left){
+    public void strafe(MyHardware myHardware,double rotations, double speed,boolean left, boolean inches){
         simplifyCode.MotorMode(myHardware,"reset");
         double data = 538*rotations;
+        if (inches) {
+            data = 43.75*rotations;
+        }
         int value = (int)data;
         if(left){
             myHardware.getFrontRight().setTargetPosition(value);
@@ -39,9 +40,12 @@ public class MoveRobot {
         simplifyCode.MotorMode(myHardware, "run");
     }
 
-    public void move(MyHardware myHardware,double rotations, double speed, boolean back){
+    public void move(MyHardware myHardware,double rotations, double speed, boolean back,boolean inches){
         simplifyCode.MotorMode(myHardware,"reset");
         double data = 538*rotations;
+        if (inches) {
+            data = 43.75*rotations;
+        }
         int value = (int)data;
 
         if (back) {

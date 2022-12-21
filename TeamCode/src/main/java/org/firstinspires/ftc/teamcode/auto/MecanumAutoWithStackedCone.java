@@ -38,10 +38,10 @@ public class MecanumAutoWithStackedCone extends LinearOpMode {
         myHardware.getClaw().setPosition(0);
        // sleep(100);
         //move forward to tall junction
-        moveRobot.move(myHardware, 4.2, 0.6, false);
+        moveRobot.move(myHardware, 4.2, 0.6, false, false);
         linearMove( 3650, 1, false);
         //strafe left at junction
-        moveRobot.strafe(myHardware, 1, 0.5, false);
+        moveRobot.strafe(myHardware, 1, 0.5, false, false);
        // sleep(100);
         //drop cone on junction
         linearMove(500,1,true);
@@ -49,33 +49,33 @@ public class MecanumAutoWithStackedCone extends LinearOpMode {
         myHardware.getClaw().setPosition(1);
         linearMove(500,1,false);
         //going back to postion to grab cones
-        moveRobot.strafe(myHardware, 1.25, 0.5, true);
+        moveRobot.strafe(myHardware, 1.25, 0.5, true, false);
         linearMove(3750, 1, true);
         //turn left to grab cones
         rotateRobot.left(myHardware, 90,telemetry);
 
 
 //    strafe to align to pick up stack
-        moveRobot.strafe(myHardware, 0.1, 0.4, false);
+        moveRobot.strafe(myHardware, 0.1, 0.4, false, false);
         linearMove(770, 0.6, false); // changed from 830->800->770
-        moveRobot.move(myHardware, 1.550 , 0.3, false);
+        moveRobot.move(myHardware, 1.550 , 0.3, false, false);
         sleep(200);
         myHardware.getClaw().setPosition(0);
         sleep(400);
         linearMove(200, 0.6, false);
-        moveRobot.move(myHardware, 0.3, 0.4, true);
+        moveRobot.move(myHardware, 0.3, 0.4, true, false);
         linearMove(500, 0.6, false);
 
         //go back with the grabbed cone
-        moveRobot.move(myHardware, 1.125, 0.6,  true);
+        moveRobot.move(myHardware, 1.125, 0.6,  true, false);
         sleep(100);
-        moveRobot.strafe(myHardware, 0.1, 0.4, true);
+        moveRobot.strafe(myHardware, 0.1, 0.4, true, false);
         sleep(200);
         rotateRobot.right(myHardware,90, telemetry);
         sleep(200);
         linearMove(2330, 1, false);
         //strafe left at junction
-        moveRobot.strafe(myHardware, 1.3, 0.5, false); //Changed 1.1->1.3
+        moveRobot.strafe(myHardware, 1.3, 0.5, false, false); //Changed 1.1->1.3
         sleep(100);
         //drop cone on junction
         myHardware.getClaw().setPosition(1);

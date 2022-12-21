@@ -148,6 +148,7 @@ public class IMUdrive extends LinearOpMode {
     public void move(double rotations, double speed, boolean back, boolean blocks) {
         MotorMode("reset");
         double data = 538 * rotations;
+        double inches = 43.75*rotations;
         if (blocks) {
             data = 1050*rotations;
         }

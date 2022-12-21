@@ -4,9 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-
 @Autonomous(name = "MecanumAutoTests", group = "Auto")
 public class MecanumAutoTests extends LinearOpMode {
     MyHardware myHardware = new MyHardware();
@@ -40,7 +37,7 @@ public class MecanumAutoTests extends LinearOpMode {
         waitForStart();
         rotateRobot.left(myHardware, 90, telemetry);
         sleep(1000);
-        moveRobot.move(myHardware, 0.2, 0.6, false);
+        moveRobot.move(myHardware, 0.2, 0.6, false, false);
         sleep(1000);
         rotateRobot.right(myHardware, 90, telemetry);
         sleep(1000);
