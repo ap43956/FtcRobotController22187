@@ -64,6 +64,57 @@ public class WorldCentricTele extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+          while (gamepad1.left_stick_button) {
+              if (gamepad2.right_trigger > 0) {
+                  linear.setPower(gamepad2.right_trigger / 1.2);
+              } else if (gamepad2.left_trigger > 0) {
+                  linear.setPower(-gamepad2.left_trigger / 1.2);
+              } else {
+                  linear.setPower(0);
+              }
+              if (gamepad2.a) {
+                  claw.setPosition(0);
+                  try {
+                      wait(10);
+                  } catch (Exception E) {
+                      telemetry.addData("failed", 0);
+                  }
+              } else if (gamepad2.b) {
+                  claw.setPosition(1);
+                  try {
+                      wait(10);
+                  } catch (Exception E) {
+                      telemetry.addData("failed", 0);
+                  }
+              }
+
+              double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+              double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+              double rx = gamepad1.right_stick_x;
+
+              // Read inverse IMU heading, as the IMU heading is CW positive
+              double botHeading = -IMU2.getAngularOrientation().firstAngle;
+              telemetry.addData("1st", IMU2.getAngularOrientation().firstAngle);
+              telemetry.addData("2nd", IMU2.getAngularOrientation().secondAngle);
+              telemetry.addData("3rd", IMU2.getAngularOrientation().thirdAngle);
+
+              double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+              double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
+              // Denominator is the largest motor power (absolute value) or 1
+              // This ensures all the powers maintain the same ratio, but only when
+              // at least one is out of the range [-1, 1]
+              double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+              double frontLeftPower = (rotY + rotX + rx) / denominator;
+              double backLeftPower = (rotY - rotX + rx) / denominator;
+              double frontRightPower = (rotY - rotX - rx) / denominator;
+              double backRightPower = (rotY + rotX - rx) / denominator;
+
+              frontLeft.setPower(frontLeftPower);
+              backLeft.setPower(backLeftPower);
+              frontRight.setPower(frontRightPower);
+              backRight.setPower(backRightPower);
+          }
             if (gamepad2.right_trigger>0){
                 linear.setPower(gamepad2.right_trigger/1.2);
             } else if (gamepad2.left_trigger>0){
@@ -104,10 +155,10 @@ public class WorldCentricTele extends LinearOpMode {
             // This ensures all the powers maintain the same ratio, but only when
             // at least one is out of the range [-1, 1]
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (rotY + rotX + rx) / denominator;
-            double backLeftPower = (rotY - rotX + rx) / denominator;
-            double frontRightPower = (rotY - rotX - rx) / denominator;
-            double backRightPower = (rotY + rotX - rx) / denominator;
+            double frontLeftPower = (rotY + rotX + rx) / denominator/2;
+            double backLeftPower = (rotY - rotX + rx) / denominator /2;
+            double frontRightPower = (rotY - rotX - rx) / denominator/2;
+            double backRightPower = (rotY + rotX - rx) / denominator /2;
 
             frontLeft.setPower(frontLeftPower);
             backLeft.setPower(backLeftPower);
