@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.IMUdrive;
 
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -19,8 +19,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "(IMUdriveCorner)", group = "Sensor")
-public class IMUdriveCorner extends LinearOpMode {
+@Autonomous(name = "(IMUdriveBASIC)", group = "Sensor")
+public class IMUdriveBASIC extends LinearOpMode {
 
     IMU imu;
     private DcMotor frontLeft;
@@ -293,7 +293,7 @@ public class IMUdriveCorner extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(2.0, 16.0 / 9.0);
+            tfod.setZoom(1.0, 16.0 / 9.0);
             telemetry.addData("setzoom", "");
         } else {
             telemetry.addData("tfod is null", "");
@@ -309,58 +309,47 @@ public class IMUdriveCorner extends LinearOpMode {
         int i = 0;
         int l = 0;
         if (opModeIsActive()) {
-            String scan = null;
-            while (opModeIsActive() && !Scanned) {
-
-                telemetry.update();
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
-                    //if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        l++;                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
-                        telemetry.addData("", "");
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        scan = (recognition.getLabel());
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        Scanned = true;
-                    }
-                    telemetry.update();
-                }
-                //}
-                else {
-                    telemetry.addData("tfod is null again", "");
-
-                }
-            }
-            //right(90);
+//            while (opModeIsActive()&&!Scanned) {
+//
+//                telemetry.update();
+//                if (tfod != null) {
+//                    // getUpdatedRecognitions() will return null if no new information is available since
+//                    // the last time that call was made.
+//                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
+//                    //if (updatedRecognitions != null) {
+//                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
+//
+//                    // step through the list of recognitions and display image position/size information for each one
+//                    // Note: "Image number" refers to the randomized image orientation/number
+//                    for (Recognition recognition : updatedRecognitions) {
+//                        l++;
+//
+//                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
+//                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
+//                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
+//                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
+//                        telemetry.addData("", "");
+//                        telemetry.addData("", " ");
+//                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+//                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+//                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
+//                        Scanned = true;
+//                    }
+//                    telemetry.update();
+//                }
+//                //}
+//                else {
+//                    telemetry.addData("tfod is null again", "");
+//
+//                }
+//            }
+           //right(90);
             //claw.setPosition(1);
-            // move(0.25, 0.25, false);
-            // left(90);
-            // move(2, 0.25, true);
-            // claw.setPosition(0);
-
-            if (scan == "1") {
-                move(2, 0.25, false);
-                strafe(2, 0.25, true);
-            } else if (scan == "2") {
-                move(2, 0.25, false);
-            } else if (scan == "3"){
-                move(2, 0.25, false);
-                strafe(2 , 0.25, false);
-            } else {
-                move(2,0.25,false);
-            }
+           // move(0.25, 0.25, false);
+           // left(90);
+           // move(2, 0.25, true);
+          // claw.setPosition(0);
+            move(2,0.7,false);
 
         }
     }

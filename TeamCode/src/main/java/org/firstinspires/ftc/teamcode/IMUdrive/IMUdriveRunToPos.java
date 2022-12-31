@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.IMUdrive;
 
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -20,8 +19,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "(IMUdriveR)", group = "Sensor")
-public class IMUdriveRight extends LinearOpMode {
+@Autonomous(name = "(IMUdrive)", group = "Sensor")
+public class IMUdriveRunToPos extends LinearOpMode {
 
     IMU imu;
     private DcMotor frontLeft;
@@ -31,10 +30,8 @@ public class IMUdriveRight extends LinearOpMode {
     private DcMotor linear;
     private Servo claw;
     boolean loopDone = false;
-    Recognition recognition;
-    ExposureControl Exposure;
 
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/ConeDetect.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/PogCone.tflite";
 
 
     private static final String[] LABELS = {
@@ -49,7 +46,7 @@ public class IMUdriveRight extends LinearOpMode {
     private TFObjectDetector tfod;
 
     private void initVuforia() {
-        /*
+        /*111
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -65,10 +62,11 @@ public class IMUdriveRight extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.750f;
+        tfodParameters.minResultConfidence = 0.600f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        claw = hardwareMap.get(Servo.class, "claw");
 
         // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
@@ -97,23 +95,19 @@ public class IMUdriveRight extends LinearOpMode {
         }
     }
 
-    public void setPower(boolean half, double speed, double speed2) {
-        if (half) {
-            frontRight.setPower(speed);
-            backRight.setPower(speed);
-            frontLeft.setPower(speed2);
-            backLeft.setPower(speed2);
-        } else {
-            frontLeft.setPower(speed);
-            frontRight.setPower(speed);
-            backLeft.setPower(speed);
-            backRight.setPower(speed);
-        }
+    public void setPower(double speedl, double speedr) {
+        frontLeft.setPower(speedl);
+        backLeft.setPower(speedl);
+        frontRight.setPower(speedr);
+        backRight.setPower(speedr);
     }
 
-    public void strafe(double rotations, double speed, boolean left) {
+    public void strafe(double rotations, double speed, boolean left, boolean blocks) {
         MotorMode("reset");
         double data = 538 * rotations;
+        if (blocks) {
+            data = 1050*rotations;
+        }
         int value = (int) data;
         telemetry.addData("GoalTicks", value);
         if (left) {
@@ -142,13 +136,16 @@ public class IMUdriveRight extends LinearOpMode {
         while (backLeft.isBusy() && frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy()) {
 
         }
-        setPower(false, 0, 0);
-        MotorMode("run");
+        setPower(0.01, 0.01);
     }
 
-    public void move(double rotations, double speed, boolean back) {
+    public void move(double rotations, double speed, boolean back, boolean blocks) {
         MotorMode("reset");
         double data = 538 * rotations;
+        double inches = 43.75*rotations;
+        if (blocks) {
+            data = 1050*rotations;
+        }
         int value = (int) data;
         telemetry.addData("GoalTicks", value);
         backLeft.setTargetPosition(value);
@@ -157,24 +154,23 @@ public class IMUdriveRight extends LinearOpMode {
         backRight.setTargetPosition(value);
         MotorMode("pos");
         if (back) {
-            setPower(false, -speed, 0);
+            setPower(-speed, -speed);
         } else {
-            setPower(false, speed, 0);
+            setPower(speed, speed);
         }
         while (backLeft.isBusy() && frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy()) {
 
         }
-        setPower(false, 0, 0);
-        MotorMode("run");
+        setPower(0.01, 0.01);
     }
 
     public void left(int angle) {
         imu.resetYaw();
-        setPower(true, -0.5, 0.5);
+        setPower(-0.5, 0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) >= angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -182,11 +178,11 @@ public class IMUdriveRight extends LinearOpMode {
             telemetry.update();
         }
         loopDone = false;
-        setPower(true, 0.1, -0.1);
+        setPower(0.1, -0.1);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) <= angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -198,11 +194,11 @@ public class IMUdriveRight extends LinearOpMode {
 
     public void right(int angle) {
         imu.resetYaw();
-        setPower(true, 0.5, -0.5);
+        setPower(0.5, -0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) <= -angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -210,11 +206,11 @@ public class IMUdriveRight extends LinearOpMode {
             telemetry.update();
         }
         loopDone = false;
-        setPower(true, -0.1, 0.1);
+        setPower(-0.1, 0.1);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) >= -angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -224,13 +220,9 @@ public class IMUdriveRight extends LinearOpMode {
         loopDone = false;
     }
 
-    public void linearMove(double rotations, double speed, boolean down) {
+    public void linearMove(int rotations, double speed, boolean down) {
         linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        double data = 538 * rotations;
-        int value = (int) data;
-        telemetry.addData("GoalTicks", value);
-        telemetry.addData("PreMult", value / 538);
-        linear.setTargetPosition(value);
+        linear.setTargetPosition(rotations);
         linear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if (down) {
             linear.setPower(-speed);
@@ -240,22 +232,19 @@ public class IMUdriveRight extends LinearOpMode {
         while (linear.isBusy()) {
 
         }
-        linear.setPower(0);
-        linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linear.setPower(0.01);
     }
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-      //  Exposure = vuforia.getCamera().getControl(ExposureControl.class);
+
         imu = hardwareMap.get(IMU.class, "imu");
         linear = hardwareMap.get(DcMotor.class, "linear");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
-        claw = hardwareMap.get(Servo.class, "claw");
-        //Exposure.setMode(ExposureControl.Mode.Manual);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -263,111 +252,15 @@ public class IMUdriveRight extends LinearOpMode {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorMode("reset");
+        MotorMode("run");
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-        telemetry.addData("InOpMode", "");
-        initVuforia();
-        telemetry.addData("loadedvuforia", "");
-        initTfod();
-        telemetry.addData("RanTfod", "");
-        /**
-         * Activate TensorFlow Object Detection before we wait for the start command.
-         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-         **/
-        if (tfod != null) {
-            telemetry.addData("tfod not null", "");
-            tfod.activate();
-            telemetry.addData("We activated", "We activated");
-            // The TensorFlow software will scale the input images from the camera to a lower resolution.
-            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-            // If your target is at distance greater than 50 cm (20") you can increase the magnification value
-            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-            // should be set to the value of the images used to create the TensorFlow Object Detection model
-            // (typically 16/9).
-           // Exposure.setExposure(60, TimeUnit.MILLISECONDS);
-            tfod.setZoom(2.0, 16.0 / 9.0);
-            telemetry.addData("setzoom", "");
-        } else {
-            telemetry.addData("tfod is null", "");
-        }
-
-        /** Wait for the game to begin */
-        telemetry.addData(">", "Press Play to start op mode");
-        telemetry.update();
-
-        boolean Scanned = false;
         waitForStart();
-        telemetry.addData("started", "");
-        int i = 0;
-        int l = 0;
         if (opModeIsActive()) {
-            String scan = null;
-            while (opModeIsActive() && !Scanned) {
 
-                telemetry.update();
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
-                    //if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        l++;
-
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
-                        telemetry.addData("", "");
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        scan = (recognition.getLabel());
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        Scanned = true;
-                    }
-                    telemetry.update();
-                }
-                //}
-                else {
-                    telemetry.addData("tfod is null again", "");
-
-                }
-            }
-            claw.setPosition(0);
-            move(0.1, 0.7, false);
-            right(90);
-            move(1, 0.5, false);
-            claw.setPosition(1);
-            move(-1, 0.5, true);
-            left(90);
-            move(-0.1, 0.7, true);
-            if (scan == "1") {
-                strafe(2, 0.25, true);
-                move(2, 0.25, false);
-            } else if (scan == "2") {
-                move(2, 0.25, false);
-            } else if (scan == "3"){
-                move(2, 0.25, false);
-                strafe(2 , 0.25, false);
-            } else {
-                move(2,0.25,false);
-            }
 
         }
     }
