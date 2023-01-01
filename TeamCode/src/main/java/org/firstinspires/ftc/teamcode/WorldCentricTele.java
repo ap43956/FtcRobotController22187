@@ -43,6 +43,7 @@ public class WorldCentricTele extends LinearOpMode {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -71,6 +72,7 @@ public class WorldCentricTele extends LinearOpMode {
                   linear.setPower(-gamepad2.left_trigger / 1.2);
               } else {
                   linear.setPower(0);
+                  telemetry.addData("noPower", linear.getPower());
               }
               if (gamepad2.a) {
                   claw.setPosition(0);
@@ -121,6 +123,7 @@ public class WorldCentricTele extends LinearOpMode {
                 linear.setPower(-gamepad2.left_trigger/1.2);
             } else {
                 linear.setPower(0);
+                telemetry.addData("noPower", linear.getPower());
             }
             if (gamepad2.a) {
                 claw.setPosition(0);

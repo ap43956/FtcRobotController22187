@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "(IMUdrive)", group = "Sensor")
+@Autonomous(name = "(IMUdriveRunToPos)", group = "Sensor")
 public class IMUdriveRunToPos extends LinearOpMode {
 
     IMU imu;
@@ -136,7 +136,7 @@ public class IMUdriveRunToPos extends LinearOpMode {
         while (backLeft.isBusy() && frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy()) {
 
         }
-        setPower(0.01, 0.01);
+        setPower(0, 0);
     }
 
     public void move(double rotations, double speed, boolean back, boolean blocks) {
@@ -161,7 +161,7 @@ public class IMUdriveRunToPos extends LinearOpMode {
         while (backLeft.isBusy() && frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy()) {
 
         }
-        setPower(0.01, 0.01);
+        setPower(0, 0);
     }
 
     public void left(int angle) {
@@ -220,19 +220,31 @@ public class IMUdriveRunToPos extends LinearOpMode {
         loopDone = false;
     }
 
-    public void linearMove(int rotations, double speed, boolean down) {
+    public void linearMove(int ticks, double speed, boolean down) {
+        telemetry.addData("beggeing", 1);
         linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linear.setTargetPosition(rotations);
+        telemetry.addData("beggeing", 2);
+        linear.setTargetPosition(ticks);
+        telemetry.addData("beggeing", 3);
         linear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        telemetry.addData("beggeing", 4);
         if (down) {
             linear.setPower(-speed);
         } else {
             linear.setPower(speed);
         }
+        telemetry.addData("beggeing", 5);
         while (linear.isBusy()) {
-
+        telemetry.addData("currentPos", linear.getCurrentPosition());
+        telemetry.update();
         }
-        linear.setPower(0.01);
+        telemetry.addData("beggeing", 6);
+        linear.setPower(0);
+        telemetry.addData("beggeing", 7);
+        linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        telemetry.addData("beggeing", 8);
+        telemetry.update();
+
     }
 
 
@@ -260,6 +272,7 @@ public class IMUdriveRunToPos extends LinearOpMode {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         waitForStart();
         if (opModeIsActive()) {
+            linearMove(800,0.1,false);
 
 
         }
