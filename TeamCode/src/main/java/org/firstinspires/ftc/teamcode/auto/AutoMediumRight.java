@@ -11,21 +11,33 @@ public class AutoMediumRight extends LinearOpMode {
     MoveRobot moveRobot = new MoveRobot();
     Camera camera = new Camera();
 
-    public void linearMove(int rotations, double speed, boolean down) {
-        myHardware.getLinear().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        telemetry.addData("GoalTicks", rotations);
-        myHardware.getLinear().setTargetPosition(rotations);
-        myHardware.getLinear().setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if (down){
-            myHardware.getLinear().setPower(-speed);
-        } else {
-            myHardware.getLinear().setPower(speed);
-        }
-        while(myHardware.getLinear().isBusy()){
+    public void linear2Base(){
+                    myHardware.getLinear().setTargetPosition(0);
+            myHardware.getLinear().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            myHardware.getLinear().setPower(-0.7);
+            while(myHardware.getLinear().isBusy()){
 
-        }
-        myHardware.getLinear().setPower(0);
-        myHardware.getLinear().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            myHardware.getLinear().setPower(0);
+            myHardware.getLinear().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void linearMove(int rotations, double speed, boolean down) {
+            myHardware.getLinear().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            telemetry.addData("GoalTicks", rotations);
+            if (down) {
+                myHardware.getLinear().setTargetPosition(rotations);
+                myHardware.getLinear().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                myHardware.getLinear().setPower(speed);
+            } else {
+                myHardware.getLinear().setTargetPosition(-rotations);
+                myHardware.getLinear().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                myHardware.getLinear().setPower(-speed);
+            }
+            while (myHardware.getLinear().isBusy()) {
+
+            }
+            myHardware.getLinear().setPower(0);
+            myHardware.getLinear().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -34,9 +46,16 @@ public class AutoMediumRight extends LinearOpMode {
         myHardware.initialize(hardwareMap, telemetry);
         waitForStart();
         myHardware.closeClaw();
-        moveRobot.strafe(myHardware, 4, 0.5, true, true);
-        moveRobot.move(myHardware, 27, 0.5, false, true);
-        moveRobot.strafe(myHardware, 14, 0.5, true, true);
+        moveRobot.strafe(myHardware, 4, 0.4, true, true);
+        moveRobot.move(myHardware, 25.5, 0.4, false, true);
+        moveRobot.strafe(myHardware, 15.5, 0.4, true, true);
+        linearMove(2900, 1, false);
+        moveRobot.move(myHardware, 1, 0.2, false, true);
+        sleep(1000);
+        myHardware.openClaw();
+        moveRobot.move(myHardware, 1, 0.2, true, true);
+//        linearMove(0, 0, false);
+        moveRobot.strafe(myHardware, 15.5, 0.4, false, true);
 
 
     }
