@@ -7,7 +7,7 @@ public class MoveRobot {
         simplifyCode.MotorMode(myHardware,"reset");
         double data = 538*rotations;
         if (inches) {
-            data = 46*rotations;//exact number is 45.36
+            data = 46.2*rotations;//exact number is 45.36
         }
         int value = (int)data;
         if(left){
@@ -44,7 +44,7 @@ public class MoveRobot {
         simplifyCode.MotorMode(myHardware,"reset");
         double data = 538*rotations;
         if (inches) {
-            data = 46*rotations;//exact number is 45.36
+            data = 46.2*rotations;//exact number is 45.36
         }
         int value = (int)data;
 
