@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "(IMUdriveLeft)", group = "Sensor")
+//@Autonomous(name = "(IMUdriveLeft)", group = "Sensor")
 public class IMUdriveL extends LinearOpMode{
 
     IMU imu;
@@ -217,16 +217,19 @@ public class IMUdriveL extends LinearOpMode{
 
     public void linearMove(int rotations, double speed, boolean down) {
         linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linear.setTargetPosition(rotations);
-        linear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //telemetry.addData("GoalTicks", rotations);
+        // linear.setTargetPosition(rotations);
+        //linear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         if (down){
             linear.setPower(-speed);
         } else {
             linear.setPower(speed);
         }
-        while(linear.isBusy()){
+        sleep(Math.abs(rotations / 2));
 
-        }
+
         linear.setPower(0);
         linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
@@ -333,7 +336,7 @@ public class IMUdriveL extends LinearOpMode{
 
         }
         //move into position
-        strafe(0.45, 0.5, true);
+        strafe(0.45, 0.5, false);
         claw.setPosition(0);
         move(2.05,0.25,false);
         strafe(3.4,0.25, true);

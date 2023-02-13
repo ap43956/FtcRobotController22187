@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "(IMUdriveBASIC)", group = "Sensor")
+//@Autonomous(name = "(IMUdriveBASIC)", group = "Sensor")
 public class IMUdriveBASIC extends LinearOpMode {
 
     IMU imu;

@@ -12,7 +12,7 @@ public class RotateRobot {
     SimplifyCode simplifyCode = new SimplifyCode();
 
     public void left(MyHardware myHardware,double angle, Telemetry vTelemetry) {
-        myHardware.getImu().resetYaw();
+       // myHardware.getImu().resetYaw();
         simplifyCode.setPower(myHardware, -0.5, 0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = myHardware.getImu().getRobotYawPitchRollAngles();
@@ -41,7 +41,7 @@ public class RotateRobot {
 
 
     public void right(MyHardware myHardware,double angle,Telemetry vTelemetry){
-        myHardware.getImu().resetYaw();
+      //  myHardware.getImu().resetYaw();
         loopDone = false;
         simplifyCode.setPower(myHardware,0.5,-0.5);
         while (!loopDone) {

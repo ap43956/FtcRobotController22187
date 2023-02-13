@@ -57,7 +57,9 @@ public class MecanumTele extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            while(gamepad1.left_stick_button) {
+
+            while(gamepad1.right_trigger/ gamepad1.right_trigger == 1) {
+                //linear.setPower(0.08);
 //            if (gamepad1.x){
 //                if (change==2){
 //                    change=1.5;
@@ -73,12 +75,11 @@ public class MecanumTele extends LinearOpMode {
                 telemetry.addData("linear", linear.getCurrentPosition());
                 telemetry.update();
                 if (gamepad2.right_trigger > 0) {
-                    linear.setPower(gamepad2.right_trigger * 3  /* /1.2*/);
+                    linear.setPower(gamepad2.right_trigger /1.2);
                 } else if (gamepad2.left_trigger > 0) {
-                    linear.setPower(-gamepad2.left_trigger * 3/*/1.2*/);
+                    linear.setPower(-gamepad2.left_trigger / 1.2);
                 } else {
                     linear.setPower(0);
-                    telemetry.addData("noPower", linear.getPower());
                 }
                 if (gamepad2.a) {
                     claw.setPosition(0);
@@ -116,6 +117,7 @@ public class MecanumTele extends LinearOpMode {
                 backRight.setPower(backRightPower);
 
             }
+
             telemetry.addData("backleft", backLeft.getCurrentPosition());
             telemetry.addData("frontRight", frontRight.getCurrentPosition());
             telemetry.addData("frontLeft", frontLeft.getCurrentPosition());
@@ -128,7 +130,6 @@ public class MecanumTele extends LinearOpMode {
                 linear.setPower(-gamepad2.left_trigger * 3/*/1.2*/);
             } else {
                 linear.setPower(0);
-                telemetry.addData("noPower", linear.getPower());
             }
             if (gamepad2.a) {
                 claw.setPosition(0);
@@ -147,9 +148,9 @@ public class MecanumTele extends LinearOpMode {
             }
 
 
-            double y = -gamepad1.left_stick_y / 3.0; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x * 1.1 / 3.0; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x / 3.0;
+            double y = -gamepad1.left_stick_y / 2.5; // Remember, this is reversed!
+            double x = gamepad1.left_stick_x * 1.1 / 2.5; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x / 2.5;
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio, but only when

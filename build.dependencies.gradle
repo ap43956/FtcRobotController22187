@@ -1,9 +1,12 @@
 repositories {
     mavenCentral()
     google() // Needed for androidx
+    jcenter()
     flatDir {
         dirs rootProject.file('libs')
     }
+
+
 }
 
 dependencies {
@@ -21,5 +24,6 @@ dependencies {
     implementation('org.tensorflow:tensorflow-lite:2.0.0')
     implementation('org.tensorflow:tensorflow-lite-gpu:2.0.0')
     implementation('org.tensorflow:tensorflow-lite-support:0.0.0-nightly') { changing = true }
+
 }
 

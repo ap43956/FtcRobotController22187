@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.auto.MyHardware;
 
 import java.nio.DoubleBuffer;
 import java.util.List;
@@ -35,7 +36,7 @@ public class IMUdrive extends LinearOpMode {
     private DcMotor linear;
     private Servo claw;
     boolean loopDone = false;
-
+    MyHardware myHardware = new MyHardware();
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/PogCone.tflite";
 
 
@@ -228,21 +229,46 @@ public class IMUdrive extends LinearOpMode {
     }
 
     public void linearMove(int rotations, double speed, boolean down) {
-        linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       // linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //telemetry.addData("GoalTicks", rotations);
         linear.setTargetPosition(rotations);
         linear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if (down) {
+
+        if (down){
             linear.setPower(-speed);
         } else {
             linear.setPower(speed);
         }
-        while (linear.isBusy()) {
+        //sleep(Math.abs(rotations / 2));
 
-        }
+while (linear.isBusy()) {
+    int prevLinear = linear.getCurrentPosition();
+    sleep(300);
+    if (Math.abs(linear.getCurrentPosition()) >= Math.abs(linear.getTargetPosition())) {
+        linear.setTargetPosition(-linear.getCurrentPosition());
         linear.setPower(0);
         linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    } else if (linear.getCurrentPosition() <= prevLinear || !(linear.getCurrentPosition() > prevLinear + 20)) {
+        linear.setPower(0);
+        linear.setTargetPosition(-linear.getCurrentPosition());
+        linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+//    int previousPos = linear.getCurrentPosition();
+//    sleep(250);
+//    if (down) {
+//       if (!(linear.getCurrentPosition() < previousPos)) {
+//           linear.setTargetPosition(linear.getCurrentPosition() + 50);
+//           sleep(300);
+//
+//
+//       }
+//    }
+}
+    linear.setPower(0);
+    linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -265,6 +291,8 @@ public class IMUdrive extends LinearOpMode {
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+        linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linear.setDirection(DcMotorSimple.Direction.REVERSE);
         telemetry.addData("InOpMode", "");
         initVuforia();
         telemetry.addData("loadedvuforia", "");
@@ -296,6 +324,7 @@ public class IMUdrive extends LinearOpMode {
         boolean read = true; //change autos VERY IMPORTANT
 
         boolean Scanned = false;
+        telemetry.addLine("Pre Start");
         waitForStart();
         telemetry.addData("started", "");
         int i = 0;
@@ -344,21 +373,32 @@ public class IMUdrive extends LinearOpMode {
 //                }
                 }
 
-
-                strafe(0.45, 0.5, true, false);
+                telemetry.addData("Ticks Left",   " After tfod, be[/fore I Test");
+                strafe(0.45, 0.5, false, false);
                 claw.setPosition(0);
                 move(2,0.25,false,false);
+                linearMove(300,0.5,false);
                 strafe(3.4,0.25, false,false);
-                linearMove(-3954,0.25,false);
 
-                move(0.2,0.25,false,false);
-                strafe(0.2,0.25,false,false);
+
+               // sleep(2000);
+                /*3954*/
+                //linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+               // linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+               // sleep(3000);
+                //INCREASE        VVVVV
+                linearMove(7000   ,0.75,false);
+
+                move(0.4,0.25,false,false);
+               // strafe(0.15,0.25,false,false);
                 sleep(2000);
-                linearMove(900,0.25,false);
                 claw.setPosition(1);
+
                 sleep(250);
+
                 strafe(3.6, 0.25, true, false);
-                linearMove(1000,0.25,true);
+               // linearMove(1000,0.25,true);
                 if (scan == "1") {
                     // move(2.2, 0.25, false);
                     strafe(2.2, 0.25, true, false);
@@ -368,17 +408,17 @@ public class IMUdrive extends LinearOpMode {
                     // move(2.2, 0.25, false);
                     strafe(2.2, 0.25, false, false);
                 }
-                linearMove(1754,0.25,true);
+                //linearMove(1754,0.25,true);
             }  else {
                 claw.setPosition(1);
                 move(2.25, 0.5, false, true);
                 left(90);
                 move(0.81, 0.25, false,true);
-                linearMove(-600, 0.25, false);
+                linearMove(3500, 0.25, false);
                 move(0.05, 0.25, false, true);
                 claw.setPosition(0);
-                sleep(1500);
-                linearMove(-500,0.5,false);
+                //sleep(1500);
+                linearMove(500,0.5,false);
                 //move(0.2, 0.25, true, true);
                 sleep(1000);
                 left(90);

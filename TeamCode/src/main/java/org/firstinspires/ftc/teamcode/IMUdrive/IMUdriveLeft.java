@@ -1,26 +1,31 @@
 package org.firstinspires.ftc.teamcode.IMUdrive;
 
 
+import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDControlLoopCoefficientsCommand;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.Servo.*;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.auto.MyHardware;
 
+import java.nio.DoubleBuffer;
 import java.util.List;
 
-@Autonomous(name = "(IMUdriveL)", group = "Sensor")
+@Autonomous(name = "(IMUdriveLeft)", group = "Sensor")
 public class IMUdriveLeft extends LinearOpMode {
 
     IMU imu;
@@ -31,10 +36,8 @@ public class IMUdriveLeft extends LinearOpMode {
     private DcMotor linear;
     private Servo claw;
     boolean loopDone = false;
-    Recognition recognition;
-    ExposureControl Exposure;
-
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/ConeDetect.tflite";
+    MyHardware myHardware = new MyHardware();
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/PogCone.tflite";
 
 
     private static final String[] LABELS = {
@@ -49,7 +52,7 @@ public class IMUdriveLeft extends LinearOpMode {
     private TFObjectDetector tfod;
 
     private void initVuforia() {
-        /*
+        /*111
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -65,10 +68,11 @@ public class IMUdriveLeft extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.750f;
+        tfodParameters.minResultConfidence = 0.600f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        claw = hardwareMap.get(Servo.class, "claw");
 
         // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
@@ -97,23 +101,19 @@ public class IMUdriveLeft extends LinearOpMode {
         }
     }
 
-    public void setPower(boolean half, double speed, double speed2) {
-        if (half) {
-            frontRight.setPower(speed);
-            backRight.setPower(speed);
-            frontLeft.setPower(speed2);
-            backLeft.setPower(speed2);
-        } else {
-            frontLeft.setPower(speed);
-            frontRight.setPower(speed);
-            backLeft.setPower(speed);
-            backRight.setPower(speed);
-        }
+    public void setPower(double speedl, double speedr) {
+        frontLeft.setPower(speedl);
+        backLeft.setPower(speedl);
+        frontRight.setPower(speedr);
+        backRight.setPower(speedr);
     }
 
-    public void strafe(double rotations, double speed, boolean left) {
+    public void strafe(double rotations, double speed, boolean left, boolean blocks) {
         MotorMode("reset");
         double data = 538 * rotations;
+        if (blocks) {
+            data = 1050*rotations;
+        }
         int value = (int) data;
         telemetry.addData("GoalTicks", value);
         if (left) {
@@ -142,13 +142,17 @@ public class IMUdriveLeft extends LinearOpMode {
         while (backLeft.isBusy() && frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy()) {
 
         }
-        setPower(false, 0, 0);
+        setPower(0, 0);
         MotorMode("run");
     }
 
-    public void move(double rotations, double speed, boolean back) {
+    public void move(double rotations, double speed, boolean back, boolean blocks) {
         MotorMode("reset");
         double data = 538 * rotations;
+        double inches = 43.75*rotations;
+        if (blocks) {
+            data = 1050*rotations;
+        }
         int value = (int) data;
         telemetry.addData("GoalTicks", value);
         backLeft.setTargetPosition(value);
@@ -157,24 +161,24 @@ public class IMUdriveLeft extends LinearOpMode {
         backRight.setTargetPosition(value);
         MotorMode("pos");
         if (back) {
-            setPower(false, -speed, 0);
+            setPower(-speed, -speed);
         } else {
-            setPower(false, speed, 0);
+            setPower(speed, speed);
         }
         while (backLeft.isBusy() && frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy()) {
 
         }
-        setPower(false, 0, 0);
+        setPower(0, 0);
         MotorMode("run");
     }
 
     public void left(int angle) {
         imu.resetYaw();
-        setPower(true, -0.5, 0.5);
+        setPower(-0.5, 0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) >= angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -182,11 +186,11 @@ public class IMUdriveLeft extends LinearOpMode {
             telemetry.update();
         }
         loopDone = false;
-        setPower(true, 0.1, -0.1);
+        setPower(0.1, -0.1);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) <= angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -198,11 +202,11 @@ public class IMUdriveLeft extends LinearOpMode {
 
     public void right(int angle) {
         imu.resetYaw();
-        setPower(true, 0.5, -0.5);
+        setPower(0.5, -0.5);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) <= -angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -210,11 +214,11 @@ public class IMUdriveLeft extends LinearOpMode {
             telemetry.update();
         }
         loopDone = false;
-        setPower(true, -0.1, 0.1);
+        setPower(-0.1, 0.1);
         while (!loopDone) {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             if (orientation.getYaw(AngleUnit.DEGREES) >= -angle) {
-                setPower(false, 0, 0);
+                setPower(0, 0);
                 loopDone = true;
             }
 
@@ -224,59 +228,71 @@ public class IMUdriveLeft extends LinearOpMode {
         loopDone = false;
     }
 
-    public void linearMove(double rotations, double speed, boolean down) {
-        linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        double data = 538 * rotations;
-        int value = (int) data;
-        telemetry.addData("GoalTicks", value);
-        telemetry.addData("PreMult", value / 538);
-        linear.setTargetPosition(value);
+    public void linearMove(int rotations, double speed, boolean down) {
+        // linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //telemetry.addData("GoalTicks", rotations);
+        linear.setTargetPosition(rotations);
         linear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if (down) {
+
+        if (down){
             linear.setPower(-speed);
         } else {
             linear.setPower(speed);
         }
-        while (linear.isBusy()) {
+        //sleep(Math.abs(rotations / 2));
 
+        while (linear.isBusy()) {
+            int prevLinear = linear.getCurrentPosition();
+            sleep(300);
+            if (Math.abs(linear.getCurrentPosition()) >= Math.abs(linear.getTargetPosition())) {
+                linear.setTargetPosition(-linear.getCurrentPosition());
+                linear.setPower(0);
+                linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            } else if (linear.getCurrentPosition() <= prevLinear || !(linear.getCurrentPosition() > prevLinear + 20)) {
+                linear.setPower(0);
+                linear.setTargetPosition(-linear.getCurrentPosition());
+                linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+//    int previousPos = linear.getCurrentPosition();
+//    sleep(250);
+//    if (down) {
+//       if (!(linear.getCurrentPosition() < previousPos)) {
+//           linear.setTargetPosition(linear.getCurrentPosition() + 50);
+//           sleep(300);
+//
+//
+//       }
+//    }
         }
         linear.setPower(0);
         linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
 
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
-        //  Exposure = vuforia.getCamera().getControl(ExposureControl.class);
+
         imu = hardwareMap.get(IMU.class, "imu");
         linear = hardwareMap.get(DcMotor.class, "linear");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
-        claw = hardwareMap.get(Servo.class, "claw");
-        //Exposure.setMode(ExposureControl.Mode.Manual);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorMode("reset");
+        MotorMode("run");
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+        linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linear.setDirection(DcMotorSimple.Direction.REVERSE);
         telemetry.addData("InOpMode", "");
         initVuforia();
         telemetry.addData("loadedvuforia", "");
@@ -296,8 +312,7 @@ public class IMUdriveLeft extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            // Exposure.setExposure(60, TimeUnit.MILLISECONDS);
-            tfod.setZoom(2.0, 16.0 / 9.0);
+            tfod.setZoom(1.5, 16.0 / 9.0);
             telemetry.addData("setzoom", "");
         } else {
             telemetry.addData("tfod is null", "");
@@ -306,70 +321,120 @@ public class IMUdriveLeft extends LinearOpMode {
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
+        boolean read = true; //change autos VERY IMPORTANT
 
         boolean Scanned = false;
+        telemetry.addLine("Pre Start");
         waitForStart();
         telemetry.addData("started", "");
         int i = 0;
         int l = 0;
         int b = 0;
+        String scan = null;
         if (opModeIsActive()) {
-            String scan = null;
-            while (opModeIsActive() && !Scanned && b < 10000) {
-                b++;
-                telemetry.update();
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getRecognitions();
-                    //if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
+            if (read) {
+                scan = null;
+                while (opModeIsActive() && !Scanned && b < 150000) {
+                    b++;
 
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        l++;
-
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
-                        telemetry.addData("", "");
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        scan = (recognition.getLabel());
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        Scanned = true;
-                    }
                     telemetry.update();
-                }
-                //}
-                else {
-                    telemetry.addData("tfod is null again", "");
+                    scan = null;
+                    if (tfod != null) {
+                        // getUpdatedRecognitions() will return null if no new information is available since
+                        // the last time that call was made.
+                        List<Recognition> updatedRecognitions = tfod.getRecognitions();
+                        //if (updatedRecognitions != null) {
+                        telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
-                }
-            }
-            claw.setPosition(0);
-            move(0.1, 0.7, false);
-            left(90);
-            move(1, 0.5, false);
-            claw.setPosition(1);
-            move(-1, 0.5, true);
-            right(90);
-            move(-0.1, 0.7, true);
-            if (scan == "1") {
-                move(2, 0.25, false);
-                strafe(2, 0.25, true);
-            } else if (scan == "2") {
-                move(2, 0.25, false);
-            } else if (scan == "3") {
-                strafe(2, 0.25, false);
-                move(2, 0.25, false);
-            } else {
-                move(2, 0.25, false);
-            }
+                        // step through the list of recognitions and display image position/size information for each one
+                        // Note: "Image number" refers to the randomized image orientation/number
+                        for (Recognition recognition : updatedRecognitions) {
+                            l++;
 
+                            double col = (recognition.getLeft() + recognition.getRight()) / 2;
+                            double row = (recognition.getTop() + recognition.getBottom()) / 2;
+                            double width = Math.abs(recognition.getRight() - recognition.getLeft());
+                            double height = Math.abs(recognition.getTop() - recognition.getBottom());
+                            telemetry.addData("", "");
+                            telemetry.addData("", " ");
+                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                            scan = recognition.getLabel();
+                            telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+                            telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
+                            Scanned = true;
+                        }
+                        telemetry.update();
+                        // }
+                    } else {
+                        telemetry.addData("tfod is null again", "");
+                    }
+//                if (b > 100000) {
+//                    Scanned = true;
+//                }
+                }
+
+                telemetry.addData("Ticks Left",   " After tfod, be[/fore I Test");
+                strafe(0.45, 0.5, false, false);
+                claw.setPosition(0);
+                move(2,0.25,false,false);
+                linearMove(100,0.5,false);
+                strafe(3.4,0.25, true,false);
+
+
+                // sleep(2000);
+                /*3954*/
+                //linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                // linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                // sleep(3000);
+                //INCREASE        VVVVV
+                linearMove(7000   ,0.75,false);
+
+                move(0.4,0.25,false,false);
+                // strafe(0.15,0.25,false,false);
+                sleep(2000);
+                claw.setPosition(1);
+
+                sleep(250);
+
+                strafe(3.6, 0.25, false, false);
+                // linearMove(1000,0.25,true);
+                if (scan == "1") {
+                    // move(2.2, 0.25, false);
+                    strafe(2.2, 0.25, true, false);
+                } else if (scan == "2") {
+                    // move(2.2, 0.25, false);
+                } else if (scan == "3") {
+                    // move(2.2, 0.25, false);
+                    strafe(2.2, 0.25, false, false);
+                }
+                //linearMove(1754,0.25,true);
+            }  else {
+                claw.setPosition(1);
+                move(2.25, 0.5, false, true);
+                left(90);
+                move(0.81, 0.25, false,true);
+                linearMove(3500, 0.25, false);
+                move(0.05, 0.25, false, true);
+                claw.setPosition(0);
+                //sleep(1500);
+                linearMove(500,0.5,false);
+                //move(0.2, 0.25, true, true);
+                sleep(1000);
+                left(90);
+                claw.setPosition(1);
+                sleep(1000);
+                right(90);
+                move(0.1,0.25,false,false);
+                linearMove(655,0.25,false);
+
+                claw.setPosition(0);
+                sleep(1500);
+                linearMove(-500, 0.5, false);
+                right(90);
+                claw.setPosition(1);
+
+            }
         }
     }
 

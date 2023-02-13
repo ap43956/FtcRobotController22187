@@ -43,7 +43,7 @@ public class WorldCentricTele extends LinearOpMode {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -63,9 +63,9 @@ public class WorldCentricTele extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-
+        linear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         while (opModeIsActive()) {
-          while (gamepad1.left_stick_button) {
+          while (gamepad1.right_trigger / gamepad1.right_trigger == 1) {
               if (gamepad2.right_trigger > 0) {
                   linear.setPower(gamepad2.right_trigger / 1.2);
               } else if (gamepad2.left_trigger > 0) {
@@ -146,7 +146,7 @@ public class WorldCentricTele extends LinearOpMode {
             double rx = gamepad1.right_stick_x;
 
             // Read inverse IMU heading, as the IMU heading is CW positive
-            double botHeading = -IMU2.getAngularOrientation().firstAngle;
+            double botHeading = -IMU2.getAngularOrientation().firstAngle - 90;
             telemetry.addData("1st", IMU2.getAngularOrientation().firstAngle);
             telemetry.addData("2nd", IMU2.getAngularOrientation().secondAngle);
             telemetry.addData("3rd", IMU2.getAngularOrientation().thirdAngle);
