@@ -1,12 +1,16 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.IMUcentricAuto;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-public class MoveRobot {
+public class MoveWithIMU {
+    double correction;
 
-    SimplifyCode simplifyCode = new SimplifyCode();
-    public void strafe(MyHardware myHardware,double rotations, double speed,boolean left, boolean inches){
 
+    SimplifyCodeIMU simplifyCode = new SimplifyCodeIMU();
+    public void strafe(MyHardware myHardware, double rotations, double speed, boolean left, boolean inches,boolean align){
+        if(align) {
+            simplifyCode.align(myHardware);
+        }
         simplifyCode.MotorMode(myHardware,"reset");
         double data = 538*rotations;
         if (inches) {
@@ -37,14 +41,37 @@ public class MoveRobot {
             myHardware.getBackRight().setPower(speed);
         }
         while(myHardware.getBackLeft().isBusy() && myHardware.getFrontLeft().isBusy()&&myHardware.getFrontRight().isBusy()&&myHardware.getBackRight().isBusy()){
-
+            //determining if corrections should be made
+            if (myHardware.getImu().getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)+myHardware.imuAngle == 0) {
+                correction = 0;
+            }
+            else {
+                correction = -myHardware.getImu().getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)+myHardware.imuAngle;
+            }
+            //adding robot specific offset
+            correction = correction * 0.01;
+            //applying corrections to motors
+            if (left){
+                myHardware.getFrontRight().setPower(speed+correction);
+                myHardware.getBackLeft().setPower(speed-correction);
+                myHardware.getFrontLeft().setPower(-speed-correction);
+                myHardware.getBackRight().setPower(-speed+correction);
+            } else {
+                myHardware.getFrontRight().setPower(speed-correction);
+                myHardware.getBackLeft().setPower(speed+correction);
+                myHardware.getFrontLeft().setPower(-speed+correction);
+                myHardware.getBackRight().setPower(-speed-correction);
+            }
         }
+
         simplifyCode.setPower(myHardware,0,0);
         simplifyCode.MotorMode(myHardware, "run");
     }
 
-    public void move(MyHardware myHardware,double rotations, double speed, boolean back,boolean inches){
-
+    public void move(MyHardware myHardware, double rotations, double speed, boolean back, boolean inches, boolean align){
+        if (align) {
+            simplifyCode.align(myHardware);
+        }
         simplifyCode.MotorMode(myHardware,"reset");
         double data = 538*rotations;
         if (inches) {
@@ -68,7 +95,28 @@ public class MoveRobot {
             simplifyCode.setPower(myHardware,speed,speed);
         }
         while(myHardware.getBackLeft().isBusy() && myHardware.getFrontLeft().isBusy()&&myHardware.getFrontRight().isBusy()&&myHardware.getBackRight().isBusy()){
-
+            //determining if corrections should be made
+            if (myHardware.getImu().getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)+myHardware.imuAngle == 0) {
+                correction = 0;
+            }
+            else {
+                correction = -myHardware.getImu().getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)+myHardware.imuAngle;
+            }
+            //adding robot specific offset
+            correction = correction * 0.01;
+            //applying corrections to motors
+            if (back){
+                simplifyCode.setPower(myHardware, speed+correction, speed-correction);
+            } else {
+                simplifyCode.setPower(myHardware, speed - correction, speed + correction);
+            }
+//            if(data-myHardware.getBackLeft().getCurrentPosition()<=data/4){
+//                if(back){
+//                    simplifyCode.setPower(myHardware, -speed/2,-speed/2);
+//                } else {
+//                    simplifyCode.setPower(myHardware, speed/2,speed/2);
+//                }
+//            }
         }
         simplifyCode.setPower(myHardware,0,0);
         simplifyCode.MotorMode(myHardware, "run");

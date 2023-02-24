@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.IMUcentricAuto;
 
 import android.graphics.Color;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+
 public class MyHardware {
 
     IMU imu;
@@ -26,10 +28,11 @@ public class MyHardware {
     private Servo claw;
     HardwareMap hardwareMap;
     Telemetry telemetry;
-
+    double imuAngle = 0;
     public void initialize(HardwareMap hardwareMap, Telemetry vTelemetry){
         telemetry = vTelemetry;
         imu = hardwareMap.get(IMU.class, "imu");
+        imu.resetYaw();
         linear = hardwareMap.get(DcMotor.class, "linear");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
@@ -54,7 +57,6 @@ public class MyHardware {
         linear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         claw = hardwareMap.get(Servo.class, "claw");
     }
-
     public IMU getImu() {
         return imu;
     }
