@@ -118,4 +118,7 @@ public class MyHardware {
     public void closeClaw(){
         claw.setPosition(0);
     }
+    public int GetFrontRightPos() {
+        return frontRight.getCurrentPosition();
+    }
 }

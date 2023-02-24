@@ -89,7 +89,10 @@ public class ThreeJunctionRightField extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         myHardware.initialize(hardwareMap, telemetry);
-
+        myHardware.getClaw().setPosition(0);
+        sleep(500);
+        myHardware.getImu().resetYaw();
+        sleep(500);
         //inits vuforia
         telemetry.addData("InOpMode", "");
         initVuforia();
@@ -172,12 +175,11 @@ public class ThreeJunctionRightField extends LinearOpMode {
                 }
                 // Auto Start -------------------------------------------------------------------------------------------------------------------------------------------------------------
                 //grab the cone
-                myHardware.getClaw().setPosition(0);
-                sleep(900);
+
                 linearMove(-1850, 1, false);
                 //move to and place cone on low junction
                moveRobot.strafe(myHardware, 7.5, 0.5, true, true);
-               moveRobot.move(myHardware,7.5,0.5,false,true);
+               moveRobot.move(myHardware,6.5,0.5,false,true);
                 sleep(20);
                 myHardware.getClaw().setPosition(1);
                 //move to cone stack
@@ -194,10 +196,10 @@ public class ThreeJunctionRightField extends LinearOpMode {
                 // myHardware.getLinear().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 moveRobot.move(myHardware, 1, 0.5, true, true);
                 linearMove(-1400, 1, false);
-                moveRobot.move(myHardware, 21, 0.5, true, true);
+                moveRobot.move(myHardware, 20, 0.5, true, true);
 
                 // linearMove(-1000,1,false);
-                moveRobot.strafe(myHardware, 13.25, 0.5, false, true);
+                moveRobot.strafe(myHardware, 12.25, 0.5, false, true);
                 myHardware.getClaw().setPosition(1);
                 sleep(75 );
                 moveRobot.strafe(myHardware,1,0.5,false,true);
@@ -205,7 +207,7 @@ public class ThreeJunctionRightField extends LinearOpMode {
                 moveRobot.move(myHardware, 2, 1, true, true);
                 //myHardware.getLinear().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 linearMove(1150,1,false);
-                moveRobot.strafe(myHardware, 11.75, 0.5, true, true);
+                moveRobot.strafe(myHardware, 10.75, 0.5, true, true);
                 moveRobot.move(myHardware, 23, 0.65, false, true);
                 myHardware.getClaw().setPosition(0);
                 sleep(200);

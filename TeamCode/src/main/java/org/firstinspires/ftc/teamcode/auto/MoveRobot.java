@@ -37,7 +37,7 @@ public class MoveRobot {
             myHardware.getBackRight().setPower(speed);
         }
         while(myHardware.getBackLeft().isBusy() && myHardware.getFrontLeft().isBusy()&&myHardware.getFrontRight().isBusy()&&myHardware.getBackRight().isBusy()){
-
+        myHardware.telemetry.update();
         }
         simplifyCode.setPower(myHardware,0,0);
         simplifyCode.MotorMode(myHardware, "run");
