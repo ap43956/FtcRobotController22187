@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.auto.MyHardware;
 import org.firstinspires.ftc.teamcode.auto.RotateRobot;
 
 import java.util.List;
-@Autonomous(name = "ThreeJunctionLeft", group = "Sensor")
+ @Autonomous(name = "ThreeJunctionLeft", group = "Sensor")
 public class ThreeJunctionRightField extends LinearOpMode {
     private MoveRobot moveRobot = new MoveRobot();
     private RotateRobot rotateRobot = new RotateRobot();
@@ -184,6 +184,12 @@ public class ThreeJunctionRightField extends LinearOpMode {
                 myHardware.getClaw().setPosition(1);
                 //move to cone stack
                 moveRobot.strafe(myHardware, 12.25, 0.5, false, true);
+                //corrects degree of rotation
+                if (myHardware.getImu().getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < 0) {
+                    rotateRobot.right(myHardware, 0, telemetry);
+                } else if (myHardware.getImu().getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > 0) {
+                    rotateRobot.left(myHardware, 0, telemetry);
+                }
                 moveRobot.move(myHardware, 47.75, 0.5, false, true);
                 moveRobot.move(myHardware, 5, 0.5,true,true);
                 rotateRobot.right(myHardware, 90, telemetry);
@@ -196,7 +202,7 @@ public class ThreeJunctionRightField extends LinearOpMode {
                 // myHardware.getLinear().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 moveRobot.move(myHardware, 1, 0.5, true, true);
                 linearMove(-1400, 1, false);
-                moveRobot.move(myHardware, 20, 0.5, true, true);
+                moveRobot.move(myHardware, 19, 0.5, true, true);
 
                 // linearMove(-1000,1,false);
                 moveRobot.strafe(myHardware, 12.25, 0.5, false, true);
@@ -207,8 +213,8 @@ public class ThreeJunctionRightField extends LinearOpMode {
                 moveRobot.move(myHardware, 2, 1, true, true);
                 //myHardware.getLinear().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 linearMove(1150,1,false);
-                moveRobot.strafe(myHardware, 10.75, 0.5, true, true);
-                moveRobot.move(myHardware, 23, 0.65, false, true);
+                moveRobot.strafe(myHardware, 12.75, 0.5, true, true);
+                moveRobot.move(myHardware, 22, 0.65, false, true);
                 myHardware.getClaw().setPosition(0);
                 sleep(200);
                 //Move to middle junction
@@ -232,7 +238,7 @@ public class ThreeJunctionRightField extends LinearOpMode {
                     rotateRobot.left(myHardware, 90, telemetry);
                 }
                 sleep(100);
-                moveRobot.strafe(myHardware, 12.0, 0.5, false, true);
+                moveRobot.strafe(myHardware, 14.0, 0.5, false, true);
                 sleep(100);
                 myHardware.getClaw().setPosition(1);
 
@@ -249,7 +255,7 @@ public class ThreeJunctionRightField extends LinearOpMode {
                     moveRobot.move(myHardware,2,0.5,true,true);
                 } else {
                     telemetry.addLine("FAILED VUFORIA");
-                    moveRobot.move(myHardware, 20, 0.5, false, true);
+                    moveRobot.move(myHardware, 42, 0.75, false, true);
                 }
             }
 

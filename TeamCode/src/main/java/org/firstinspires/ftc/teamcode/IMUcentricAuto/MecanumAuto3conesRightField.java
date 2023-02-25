@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 @Autonomous(name = "MecanumAutoIMUcentric3conesLeft", group = "Auto")
-public class MecanumAuto3conesRightField extends LinearOpMode {
+public class  MecanumAuto3conesRightField extends LinearOpMode {
     MyHardware H = new MyHardware();
     RotateWithIMU R = new RotateWithIMU();
     MoveWithIMU M = new MoveWithIMU();
@@ -172,16 +172,16 @@ public class MecanumAuto3conesRightField extends LinearOpMode {
                 }
                 // Auto Start -------------------------------------------------------------------------------------------------------------------------------------------------------------
                 //grab the cone
-                linear(-2050, 1, false);
+                linear(-1850, 1, false);
                 //move to and place cone on low junction
                 M.strafe(H, 7.5, 0.5, true, true, false);
-                M.move(H, 7.5, 0.5, false, true, true);
+                M.move(H, 6.5, 0.5, false, true, true);
                 sleep(20);
                 H.getClaw().setPosition(1);
                 //move to cone stack
                 M.strafe(H, 12.25, 0.5, false, true, true);
-                M.move(H, 44, 0.7, false, true,true);
-                M.move(H, 3, 0.5,true,true,true);
+                M.move(H, 47.75, 0.7, false, true,true);
+                M.move(H, 5, 0.5,true,true,true);
                 //first and only turn 90 left
                 H.imuAngle=-90;
                 F.LinearAndTurn(H,telemetry,650,1,false);
@@ -195,45 +195,46 @@ public class MecanumAuto3conesRightField extends LinearOpMode {
                 // H.getLinear().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 M.move(H, 1, 0.5, true, true,true);
                 linear(-1400, 1, false);
-                M.move(H, 19.3, 0.5, true, true,true);
+                M.move(H, 20, 0.5, true, true,true);
 
                 // linear(-1000,1,false);
-                M.strafe(H, 12.75 , 0.5, false, true,true);
+                M.strafe(H, 12.25 , 0.5, false, true,true);
                 H.getClaw().setPosition(1);
-                sleep(150 );
+                sleep(75 );
                 M.strafe(H,1,0.5,false,true,true);
                 //third iteration (middle junction)
-                M.move(H, 3, 1, true, true,true);
+                M.move(H, 2, 1, true, true,true);
                 //H.getLinear().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 linear(1150,1,false);
-                M.strafe(H, 13.5, 0.5, true, true,true);
+                M.strafe(H, 10.75, 0.5, true, true,true);
                 M.move(H, 23, 0.7, false, true,true);
                 H.getClaw().setPosition(0);
                 sleep(200);
                 //Move to middle junction
                 //H.getLinear().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 M.move(H, 1, 0.5, true, true,true);
-                linear(-3000, 1, false);
+                linear(-3200, 1, false);
 
 
-                M.move(H, 42.5, 0.5, true, true,true);
+                M.move(H, 43.5, 0.5, true, true,true);
 
                 M.strafe(H, 12, 0.5, false, true,true);
 
                 H.getClaw().setPosition(1);
                 sleep(500);
                 //Moves over and parks
-                M.strafe(H, 13, 0.5, false, true,true);
+                M.strafe(H, 15.5, 0.5, false, true,true);
                 if (scan == "1") {
                     telemetry.addLine("VUFORIA 1");
-                    M.move(H, 44, 0.5, false, true,true);
+                    M.move(H, 42, 0.5, false, true,true);
                 } else if (scan == "2") {
                     telemetry.addLine("VUFORIA 2");
                     M.move(H, 20, 0.5, false, true,true);
                 } else if (scan == "3") {
                     telemetry.addLine("VUFORIA 3");
+                    M.move(H,2,0.5,true,true,true);
                 } else {
-                    M.move(H, 44, 0.5, false, true,true);
+                    M.move(H, 20, 0.5, false, true,true);
                 }
             }
 
