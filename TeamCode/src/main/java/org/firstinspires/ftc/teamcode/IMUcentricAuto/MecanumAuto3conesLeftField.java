@@ -174,7 +174,7 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                 //grab the cone
                 linear(-2050, 1, false);
                 //move to and place cone on low junction
-                M.strafe(H, 18.5, 0.5, false, true, false);
+                M.strafe(H, 17.8, 0.5, false, true, false);
                 M.move(H, 6, 0.5, false, true, true);
                 sleep(20);
                 H.getClaw().setPosition(1);
@@ -218,10 +218,10 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
 
                 M.move(H, 42.5, 0.5, true, true,true);
 
-                M.strafe(H, 12, 0.5, true, true,true);
+                M.strafe(H, 13, 0.5, true, true,true);
 
                 H.getClaw().setPosition(1);
-                sleep(500);
+                sleep(750);
                 //Moves over and parks
                 M.strafe(H, 13, 0.5, true, true,true);
                 if (scan == "1") {
@@ -229,7 +229,7 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                     M.move(H, 44, 0.5, false, true,true);
                 } else if (scan == "2") {
                     telemetry.addLine("VUFORIA 2");
-                    M.move(H, 22, 0.5, false, true,true);
+                    M.move(H, 21, 0.5, false, true,true);
                 } else if (scan == "3") {
                     telemetry.addLine("VUFORIA 3");
                 } else {
