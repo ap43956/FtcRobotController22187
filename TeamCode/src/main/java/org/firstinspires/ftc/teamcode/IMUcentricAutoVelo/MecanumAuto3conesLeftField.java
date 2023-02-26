@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.IMUcentricAuto;
+package org.firstinspires.ftc.teamcode.IMUcentricAutoVelo;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -11,8 +12,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
-
-@Autonomous(name = "MecanumAutoIMUcentric3conesRight", group = "Auto")
+@Disabled
+@Autonomous(name = "MecanumAutoIMUcentric3conesRightVelo", group = "Auto")
 public class MecanumAuto3conesLeftField extends LinearOpMode {
     MyHardware H = new MyHardware();
     RotateWithIMU R = new RotateWithIMU();
@@ -174,12 +175,12 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                 //grab the cone
                 linear(-2050, 1, false);
                 //move to and place cone on low junction
-                M.strafe(H, 18, 0.5, false, true, false);
+                M.strafe(H, 17.8, 0.5, false, true, false);
                 M.move(H, 6, 0.5, false, true, true);
                 sleep(20);
                 H.getClaw().setPosition(1);
                 //move to cone stack
-                M.strafe(H, 11.5, 0.5, true, true, true);
+                M.strafe(H, 12, 0.5, true, true, true);
                 M.move(H, 47.75, 0.7, false, true,true);
                 M.move(H, 3, 0.5,true,true,true);
                 //first and only turn 90 left
@@ -218,10 +219,10 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
 
                 M.move(H, 42.5, 0.5, true, true,true);
 
-                M.strafe(H, 14, 0.5, true, true,true);
+                M.strafe(H, 13, 0.5, true, true,true);
 
                 H.getClaw().setPosition(1);
-                sleep(500);
+                sleep(750);
                 //Moves over and parks
                 M.strafe(H, 13, 0.5, true, true,true);
                 if (scan == "1") {
@@ -229,10 +230,9 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                     M.move(H, 44, 0.5, false, true,true);
                 } else if (scan == "2") {
                     telemetry.addLine("VUFORIA 2");
-                    M.move(H, 22, 0.5, false, true,true);
+                    M.move(H, 21, 0.5, false, true,true);
                 } else if (scan == "3") {
                     telemetry.addLine("VUFORIA 3");
-                    M.move(H,2, 0.5, true, true, true);
                 } else {
                     M.move(H, 44, 0.5, false, true,true);
                 }
