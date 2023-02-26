@@ -218,7 +218,7 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
 
                 M.move(H, 42.5, 0.5, true, true,true);
 
-                M.strafe(H, 12, 0.5, true, true,true);
+                M.strafe(H, 13, 0.5, true, true,true);
 
                 H.getClaw().setPosition(1);
                 sleep(500);
