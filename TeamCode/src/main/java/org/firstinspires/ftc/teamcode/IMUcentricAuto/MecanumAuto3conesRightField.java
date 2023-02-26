@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "MecanumAutoIMUcentric3conesLeft", group = "Auto")
+//@Autonomous(name = "MecanumAutoIMUcentric3conesLeft", group = "Auto")
 public class  MecanumAuto3conesRightField extends LinearOpMode {
     MyHardware H = new MyHardware();
     RotateWithIMU R = new RotateWithIMU();
