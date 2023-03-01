@@ -184,7 +184,7 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                 M.move(H, 3, 0.5,true,true,true);
                 //first and only turn 90 left
                 H.imuAngle=90;
-                F.LinearAndTurn(H,telemetry,650,1,false);
+                F.LinearAndTurn(H,telemetry,1000,1,false);
 //                R.GoToAngle(H, telemetry);
 //                linear(525, 1, false);
                 M.move(H, 23.45, 0.4, false, true,true);
@@ -229,7 +229,7 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                     M.move(H, 44, 0.5, false, true,true);
                 } else if (scan == "2") {
                     telemetry.addLine("VUFORIA 2");
-                    M.move(H, 22, 0.5, false, true,true);
+                    M.move(H, 21, 0.5, false, true,true);
                 } else if (scan == "3") {
                     telemetry.addLine("VUFORIA 3");
                     M.move(H,2, 0.5, true, true, true);
