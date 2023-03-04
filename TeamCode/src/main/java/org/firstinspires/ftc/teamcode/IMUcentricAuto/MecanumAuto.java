@@ -32,7 +32,7 @@ public class MecanumAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         H.initialize(hardwareMap, telemetry);
-        M.move(H, 200, 0.4, false, true, true);
-
+        H.imuAngle = -90;
+        R.GoToAngle(H,telemetry);
     }
 }

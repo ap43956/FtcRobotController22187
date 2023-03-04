@@ -174,12 +174,12 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                 //grab the cone
                 linear(-2050, 1, false);
                 //move to and place cone on low junction
-                M.strafe(H, 18, 0.5, false, true, false);
+                M.strafe(H, 17.5, 0.5, false, true, false);
                 M.move(H, 6, 0.5, false, true, true);
                 sleep(20);
                 H.getClaw().setPosition(1);
                 //move to cone stack
-                M.strafe(H, 11.5, 0.5, true, true, true);
+                M.strafe(H, 11, 0.5, true, true, true);
                 M.move(H, 47.75, 0.7, false, true,true);
                 M.move(H, 3, 0.5,true,true,true);
                 //first and only turn 90 left
@@ -216,9 +216,9 @@ public class MecanumAuto3conesLeftField extends LinearOpMode {
                 linear(-3000, 1, false);
 
 
-                M.move(H, 42.5, 0.5, true, true,true);
+                M.move(H, 43.5, 0.5, true, true,true);
 
-                M.strafe(H, 14, 0.5, true, true,true);
+                M.strafe(H, 13, 0.5, true, true,true);
 
                 H.getClaw().setPosition(1);
                 sleep(500);
